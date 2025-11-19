@@ -62,6 +62,7 @@ jobs:
             pyproject.toml
             uv.lock
             tests
+            LICENSE
 
       - uses: astral-sh/setup-uv@v5
         with:

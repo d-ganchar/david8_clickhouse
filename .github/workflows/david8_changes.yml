@@ -1,0 +1,86 @@
+name: david8 changes
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_url:
+        description: 'david8 artefact'
+        required: true
+        type: string
+      auth_token:
+        description: 'Auth token for artifact download'
+        required: true
+        type: string
+
+jobs:
+  build_david8_clickhouse:
+    runs-on: ubuntu-22.04
+    env:
+      UV_PYTHON: 3.11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: 3.11
+      - name: Build
+        run: |
+          uv build
+          mkdir david8_clickhouse_build
+          mv ./dist ./david8_clickhouse_build
+
+      - name: Upload david8_clickhouse package
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: david8_clickhouse_build
+
+  tests:
+    runs-on: ubuntu-22.04
+    needs: [ build_david8_clickhouse ]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11", "3.12", "3.13" ]
+
+    steps:
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            pyproject.toml
+            uv.lock
+            tests
+            LICENSE
+
+      - name: Install dependencies
+        run: |
+          uv sync --dev
+          echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
+
+      - name: Download david8_clickhouse dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Download david8 dist
+        run: |
+          curl -L \
+          -H "Authorization: token ${{ github.event.inputs.auth_token }}" \
+          -H "Accept: application/vnd.github+json" \
+          "${{ github.event.inputs.artifact_url }}" \
+          -o artifact.zip
+          
+          unzip artifact.zip -d david8
+
+      - name: Install david8
+        run: |
+          uv pip install dist/*.tar.gz      # david8_clickhouse
+          uv pip install david8/dist/*.tar.gz -U
+          uv pip freeze | grep david8
+
+      - name: Test with python ${{ matrix.python-version }}
+        run: pytest tests
