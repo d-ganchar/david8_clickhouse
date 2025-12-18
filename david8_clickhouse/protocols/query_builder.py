@@ -1,9 +1,20 @@
-from david8.protocols.dml import AliasedProtocol, ExprProtocol, FunctionProtocol
-from david8.protocols.query_builder import QueryBuilderProtocol as _QueryBuilderProtocol
+from collections.abc import Iterable
 
-from ..protocols.select import SelectProtocol
+from david8.protocols.query_builder import QueryBuilderProtocol as _QueryBuilderProtocol
+from david8.protocols.sql import AliasedProtocol, ExprProtocol, FunctionProtocol, QueryProtocol
+
+from ..protocols.sql import SelectProtocol
 
 
 class QueryBuilderProtocol(_QueryBuilderProtocol):
     def select(self, *args: str | AliasedProtocol | ExprProtocol | FunctionProtocol) -> SelectProtocol:
+        pass
+
+    def drop_partitions(
+        self,
+        table: str,
+        partitions: Iterable[str | int | tuple[int | str, ...]],
+        db: str = None,
+        on_cluster: str = None,
+    ) -> QueryProtocol:
         pass

@@ -1,4 +1,4 @@
-from david8.protocols.dml import SelectProtocol as _SelectProtocol
+from david8.protocols.sql import SelectProtocol as _SelectProtocol
 
 
 class SelectProtocol(_SelectProtocol):

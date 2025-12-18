@@ -78,11 +78,11 @@ toml = [
 
 [[package]]
 name = "david8"
-version = "0.5.0b1"
+version = "0.7.0b1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/aa/31/ab81e77050b93b6be1baf9d0ef802c16dd841bc6498f126f1f942b60884d/david8-0.5.0b1.tar.gz", hash = "sha256:0f4745ce6ca045a6f94e9fc68ab0da3e810334b84a3ac268ecb98c293c9812ba", size = 22403 }
+sdist = { url = "https://files.pythonhosted.org/packages/43/a1/99e47d7ba6361910c8bf06a18f7d2459633cd804dc70182e1d1491dcd1fa/david8-0.7.0b1.tar.gz", hash = "sha256:2779a407d2295e87c18b10653cc4a457f10491d12933e217557b783548f7a95e", size = 24255 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/17/1c/21adf8e6b0dac507b9fa483d1294e52228d07fb321fe7aa260608a7d929b/david8-0.5.0b1-py3-none-any.whl", hash = "sha256:ccdebfcfb0c7901170b67387fade067d4fb66f07345f94d3aa1ecb02bdac1a46", size = 20491 },
+    { url = "https://files.pythonhosted.org/packages/16/20/e010bef99bb09f6ea37a6833049ec4e937b56bfdd4fa4548f40977474dd5/david8-0.7.0b1-py3-none-any.whl", hash = "sha256:72b922f39d9a4b16ae1d43f5937389fdcc34d9cfc49b74964d27cc4c4da082cf", size = 23825 },
 ]
 
 [[package]]
@@ -102,7 +102,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "david8", specifier = ">=0.5.0b1" }]
+requires-dist = [{ name = "david8", specifier = ">=0.7.0b1" }]
 
 [package.metadata.requires-dev]
 dev = [

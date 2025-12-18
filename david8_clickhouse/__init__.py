@@ -1,7 +1,7 @@
 from david8.core.base_dialect import BaseDialect as _BaseDialect
 from david8.param_styles import PyFormatParamStyle
 
-from ._core.query_builder import ClickHouseQueryBuilder as _QueryBuilder
+from .core.query_builder import ClickHouseQueryBuilder as _QueryBuilder
 from .protocols.query_builder import QueryBuilderProtocol
 
 

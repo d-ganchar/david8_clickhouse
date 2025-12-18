@@ -1,7 +1,7 @@
 from david8.core.base_dml import BaseSelect as _BaseSelect
 from david8.protocols.dialect import DialectProtocol
 
-from ..protocols.select import SelectProtocol
+from ..protocols.sql import SelectProtocol
 
 
 class ClickHouseSelect(_BaseSelect, SelectProtocol):

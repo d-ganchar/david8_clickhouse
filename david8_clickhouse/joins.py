@@ -1,6 +1,6 @@
 from david8.protocols.dml import AliasedProtocol, JoinProtocol
 
-from ._core.array_join import ArrayJoin as _ArrayJoin
+from .core.array_join import ArrayJoin as _ArrayJoin
 
 
 def array_join(*args: str | AliasedProtocol) -> JoinProtocol:

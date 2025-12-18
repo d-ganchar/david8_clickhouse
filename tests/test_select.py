@@ -1,6 +1,6 @@
 from parameterized import parameterized
 
-from david8_clickhouse.protocols.select import SelectProtocol
+from david8_clickhouse.protocols.sql import SelectProtocol
 from tests.base_test import BaseTest
 
 
