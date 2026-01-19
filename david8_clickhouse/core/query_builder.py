@@ -6,7 +6,8 @@ from david8.protocols.dml import AliasedProtocol, ExprProtocol, FunctionProtocol
 from david8.protocols.sql import QueryProtocol
 
 from ..protocols.query_builder import QueryBuilderProtocol
-from ..protocols.sql import SelectProtocol
+from ..protocols.sql import CreateTableProtocol, SelectProtocol
+from .ddl import CreateTable
 from .drop_partitions import DropPartitions
 from .select_query import ClickHouseSelect
 
@@ -24,3 +25,6 @@ class ClickHouseQueryBuilder(QueryBuilderProtocol, _BaseQueryBuilder):
     ) -> QueryProtocol:
         return DropPartitions(dialect=self._dialect, on_cluster=on_cluster,
                               table=FullTableName(table, db), partitions=partitions)
+
+    def create_table_as(self, query: SelectProtocol, table: str, db: str = '') -> CreateTableProtocol:
+        return CreateTable(dialect=self._dialect, query=query, table=FullTableName(table, db))

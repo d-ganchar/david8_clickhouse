@@ -5,6 +5,8 @@ from david8.core.base_expressions import FullTableName
 from david8.core.base_query import BaseQuery
 from david8.protocols.dialect import DialectProtocol
 
+from ..core.expressions import on_cluster
+
 
 @dataclasses.dataclass(slots=True)
 class DropPartitions(BaseQuery):
@@ -16,11 +18,7 @@ class DropPartitions(BaseQuery):
         return f'ALTER TABLE {self.table.get_sql(dialect)} '
 
     def _render_sql(self, dialect: DialectProtocol) -> str:
-        if isinstance(self.on_cluster, str):
-            cluster = f"'{self.on_cluster}'" if self.on_cluster.startswith('{') else self.on_cluster
-            return f"ON CLUSTER {cluster} "
-
-        return ''
+        return on_cluster(self.on_cluster)
 
     def _render_sql_postfix(self, dialect: DialectProtocol) -> str:
         partitions = ()

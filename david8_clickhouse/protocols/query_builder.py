@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from david8.protocols.query_builder import QueryBuilderProtocol as _QueryBuilderProtocol
 from david8.protocols.sql import AliasedProtocol, ExprProtocol, FunctionProtocol, QueryProtocol
 
-from ..protocols.sql import SelectProtocol
+from ..protocols.sql import CreateTableProtocol, SelectProtocol
 
 
 class QueryBuilderProtocol(_QueryBuilderProtocol):
@@ -17,4 +17,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         db: str = None,
         on_cluster: str = None,
     ) -> QueryProtocol:
+        pass
+
+    def create_table_as(self, query: SelectProtocol, table: str, db: str = '') -> CreateTableProtocol:
         pass
