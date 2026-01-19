@@ -14,6 +14,6 @@ class ClickHouseSelect(_BaseSelect, SelectProtocol):
 
     def _from_to_sql(self, dialect: DialectProtocol) -> str:
         sql = super()._from_to_sql(dialect)
-        if self.final and self.from_table_cnstr.from_table:
+        if self.final and self.from_table_cnstr.table:
             return f'{sql} FINAL'
         return sql

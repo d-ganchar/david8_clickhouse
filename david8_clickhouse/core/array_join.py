@@ -1,7 +1,7 @@
 import dataclasses
 
 from david8.protocols.dialect import DialectProtocol
-from david8.protocols.dml import AliasedProtocol, JoinProtocol
+from david8.protocols.sql import AliasedProtocol, JoinProtocol
 
 
 @dataclasses.dataclass(slots=True)

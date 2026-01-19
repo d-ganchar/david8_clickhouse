@@ -1,4 +1,4 @@
-from david8.protocols.dml import AliasedProtocol, JoinProtocol
+from david8.protocols.sql import AliasedProtocol, JoinProtocol
 
 from .core.array_join import ArrayJoin as _ArrayJoin
 

@@ -2,8 +2,7 @@ from collections.abc import Iterable
 
 from david8.core.base_expressions import FullTableName
 from david8.core.base_query_builder import BaseQueryBuilder as _BaseQueryBuilder
-from david8.protocols.dml import AliasedProtocol, ExprProtocol, FunctionProtocol
-from david8.protocols.sql import QueryProtocol
+from david8.protocols.sql import AliasedProtocol, ExprProtocol, FunctionProtocol, QueryProtocol
 
 from ..protocols.query_builder import QueryBuilderProtocol
 from ..protocols.sql import CreateTableProtocol, SelectProtocol

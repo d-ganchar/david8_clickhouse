@@ -1,5 +1,5 @@
 from david8.expressions import col
-from david8.protocols.dml import JoinProtocol
+from david8.protocols.sql import JoinProtocol
 from parameterized import parameterized
 
 from david8_clickhouse.joins import array_join
