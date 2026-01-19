@@ -18,7 +18,10 @@ class DropPartitions(BaseQuery):
         return f'ALTER TABLE {self.table.get_sql(dialect)} '
 
     def _render_sql(self, dialect: DialectProtocol) -> str:
-        return on_cluster(self.on_cluster)
+        cluster = on_cluster(self.on_cluster)
+        if cluster:
+            return f'{cluster} '
+        return ''
 
     def _render_sql_postfix(self, dialect: DialectProtocol) -> str:
         partitions = ()

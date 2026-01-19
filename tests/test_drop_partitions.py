@@ -20,12 +20,12 @@ class TestDropPartitions(BaseTest):
         ),
         (
             BaseTest.qb_w.drop_partitions('events', ['2026-01-01', '2026-01-02'], 'raw', on_cluster='{cluster}'),
-            "ALTER TABLE \"raw\".\"events\" ON CLUSTER '{cluster}' DROP PARTITION '2026-01-01', "
+            "ALTER TABLE \"raw\".\"events\" ON CLUSTER {cluster} DROP PARTITION '2026-01-01', "
             "DROP PARTITION '2026-01-02'",
         ),
         (
             BaseTest.qb.drop_partitions('events', [(202601, 'PL'), (202601, 'BY')], 'raw', on_cluster='{cluster}'),
-            "ALTER TABLE raw.events ON CLUSTER '{cluster}' DROP PARTITION (202601, 'PL'), "
+            "ALTER TABLE raw.events ON CLUSTER {cluster} DROP PARTITION (202601, 'PL'), "
             "DROP PARTITION (202601, 'BY')",
         ),
     ])
