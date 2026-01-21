@@ -1,7 +1,9 @@
+
 from david8.core.base_dql import BaseSelect as _BaseSelect
 from david8.protocols.dialect import DialectProtocol
+from david8.protocols.sql import FunctionProtocol
 
-from ..protocols.sql import SelectProtocol
+from ..protocols.sql import SelectProtocol, TableFunctionProtocol
 
 
 class ClickHouseSelect(_BaseSelect, SelectProtocol):
@@ -11,6 +13,13 @@ class ClickHouseSelect(_BaseSelect, SelectProtocol):
         super().from_table(table_name, alias, db_name)
         self.final = final
         return self
+
+    def from_expr(
+        self,
+        expr: SelectProtocol | FunctionProtocol | TableFunctionProtocol,
+        alias: str = ''
+    ) -> SelectProtocol:
+        return super().from_expr(expr, alias)
 
     def _from_to_sql(self, dialect: DialectProtocol) -> str:
         sql = super()._from_to_sql(dialect)

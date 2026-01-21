@@ -23,5 +23,5 @@ class TestSelect(BaseTest):
             'SELECT "name" FROM "legacy"."events" FINAL',
         ),
     ])
-    def test_final(self, query: SelectProtocol, exp_sql):
+    def test_final(self, query: SelectProtocol, exp_sql: str):
         self.assertEqual(query.get_sql(), exp_sql)

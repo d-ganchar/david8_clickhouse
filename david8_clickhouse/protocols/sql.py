@@ -1,4 +1,5 @@
-from david8.protocols.sql import FunctionProtocol, QueryProtocol
+from david8.protocols.sql import ExprProtocol, FunctionProtocol, QueryProtocol
+from david8.protocols.sql import InsertProtocol as _InsertProtocol
 from david8.protocols.sql import SelectProtocol as _SelectProtocol
 
 
@@ -23,3 +24,15 @@ class CreateTableProtocol(QueryProtocol):
 
     def on_cluster(self, name: str) -> 'CreateTableProtocol':
         pass
+
+
+class TableFunctionProtocol(ExprProtocol):
+    pass
+
+
+class InsertProtocol(_InsertProtocol):
+    def into_table_fn(self, fn: TableFunctionProtocol) -> 'InsertProtocol':
+        """
+        Insert into table function:
+        https://clickhouse.com/docs/sql-reference/table-functions
+        """
