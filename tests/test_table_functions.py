@@ -2,8 +2,8 @@ from david8.protocols.sql import QueryProtocol
 from parameterized import parameterized
 
 from david8_clickhouse.cast_types import string, uint8
-from david8_clickhouse.functions_table import url_
-from david8_clickhouse.input_output_formats import CSV
+from david8_clickhouse.functions_table import s3, url_
+from david8_clickhouse.input_output_formats import CSV, CSV_WITH_NAMES
 from david8_clickhouse.protocols.sql import SelectProtocol
 from tests.base_test import BaseTest
 
@@ -64,4 +64,99 @@ class TestTableFunction(BaseTest):
         ),
     ])
     def test_select_from_table_fn(self, query: SelectProtocol, exp_sql: str):
+        self.assertEqual(query.get_sql(), exp_sql)
+
+    @parameterized.expand([
+        # no named creds
+        (
+            BaseTest.qb.select('*').from_expr(s3('https://public-datasets.com/test.csv')),
+            "SELECT * FROM s3('https://public-datasets.com/test.csv')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                no_sign=True,
+                data_format=CSV_WITH_NAMES,
+            )),
+            "SELECT * FROM s3('https://public-datasets.com/test.csv', NOSIGN, 'CSVWithNames')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                access_key_id='AWS_ACCESS_KEY_ID',
+                secret_access_key='AWS_SECRET_ACCESS_KEY',
+                session_token='1234',
+            )),
+            "SELECT * FROM s3('https://public-datasets.com/test.csv', 'AWS_ACCESS_KEY_ID', "
+            "'AWS_SECRET_ACCESS_KEY', '1234')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                data_format=CSV,
+                structure=[
+                    ('name', string),
+                    ('price', uint8),
+                ],
+            )),
+            "SELECT * FROM s3('https://public-datasets.com/test.csv', 'CSV', 'name String, price UInt8')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                data_format=CSV,
+                structure=[
+                    ('name', string),
+                    ('price', uint8),
+                ],
+                compression_method='gzip',
+            )),
+            "SELECT * FROM s3('https://public-datasets.com/test.csv', 'CSV', 'name String, price UInt8', 'gzip')",
+        ),
+        # named creds
+        (
+            BaseTest.qb.select('*').from_expr(s3('https://public-datasets.com/test.csv', 'creds')),
+            "SELECT * FROM s3(creds, url='https://public-datasets.com/test.csv')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                'creds',
+                access_key_id='AWS_ACCESS_KEY_ID',
+                secret_access_key='AWS_SECRET_ACCESS_KEY',
+                session_token='1234',
+            )),
+            "SELECT * FROM s3(creds, url='https://public-datasets.com/test.csv', access_key_id='AWS_ACCESS_KEY_ID', "
+            "secret_access_key='AWS_SECRET_ACCESS_KEY', session_token='1234')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                'creds',
+                data_format=CSV,
+                structure=[
+                    ('name', string),
+                    ('price', uint8),
+                ],
+            )),
+            "SELECT * FROM s3(creds, url='https://public-datasets.com/test.csv', "
+            "format='CSV', structure='name String, price UInt8')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(s3(
+                'https://public-datasets.com/test.csv',
+                'creds',
+                data_format=CSV,
+                structure=[
+                    ('name', string),
+                    ('price', uint8),
+                ],
+                compression_method='gzip',
+            )),
+            "SELECT * FROM s3(creds, "
+            "url='https://public-datasets.com/test.csv', format='CSV', structure='name String, price UInt8', "
+            "compression_method='gzip')",
+        ),
+    ])
+    def test_select_from_s3_fn(self, query: SelectProtocol, exp_sql: str):
         self.assertEqual(query.get_sql(), exp_sql)
