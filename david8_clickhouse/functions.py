@@ -94,6 +94,8 @@ to_datetime_or_null = _StrArgFactory(name='toDateTimeOrNull')
 
 # agg functions
 uniq_state = _OneArgWindowFactory(name='uniqState')
+var_pop = _OneArgWindowFactory(name='varPop')
+var_samp = _OneArgWindowFactory(name='varSamp')
 
 multi_if = _MultiIfFactory()
 
