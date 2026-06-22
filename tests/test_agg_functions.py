@@ -1,9 +1,7 @@
 from david8.protocols.sql import FunctionProtocol
 from parameterized import parameterized
 
-from david8_clickhouse.functions import (
-    stddev_pop, stddev_samp, uniq_exact, uniq_state, var_pop, var_samp, uniq
-)
+from david8_clickhouse.functions import stddev_pop, stddev_samp, uniq, uniq_exact, uniq_state, var_pop, var_samp
 from tests.base_test import BaseTest
 
 

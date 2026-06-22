@@ -9,6 +9,9 @@ class SelectProtocol(_SelectProtocol):
         final flag: https://clickhouse.com/docs/sql-reference/statements/select/from#final-modifier
         """
 
+    def sample(self, value: int | float, offset: int | float = None) -> 'SelectProtocol':
+        pass
+
 class CreateTableProtocol(QueryProtocol):
     def engine(self, value: str) -> 'CreateTableProtocol':
         pass
