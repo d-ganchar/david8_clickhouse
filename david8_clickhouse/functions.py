@@ -99,6 +99,7 @@ var_samp = _OneArgWindowFactory(name='varSamp')
 stddev_pop = _OneArgWindowFactory(name='stddevPop')
 stddev_samp = _OneArgWindowFactory(name='stddevSamp')
 uniq_exact = _OneArgWindowFactory(name='uniqExact')
+uniq = _OneArgWindowFactory(name='uniq')
 
 multi_if = _MultiIfFactory()
 
