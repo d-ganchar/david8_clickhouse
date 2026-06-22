@@ -1,7 +1,7 @@
 from david8.protocols.sql import FunctionProtocol
 from parameterized import parameterized
 
-from david8_clickhouse.functions import uniq_state, var_pop, var_samp, stddev_samp, stddev_pop
+from david8_clickhouse.functions import stddev_pop, stddev_samp, uniq_exact, uniq_state, var_pop, var_samp
 from tests.base_test import BaseTest
 
 
@@ -53,5 +53,15 @@ class TestAggFunctions(BaseTest):
         ),
     ])
     def test_stddev_pop(self, fn: FunctionProtocol, exp_sql: str):
+        query = self.qb.select(fn)
+        self.assertEqual(query.get_sql(), exp_sql)
+
+    @parameterized.expand([
+        (
+            uniq_exact('user_id').over(partition_by=['host'], order_by=['ts']),
+            'SELECT uniqExact(user_id) OVER (PARTITION BY host ORDER BY ts)',
+        ),
+    ])
+    def test_uniq_exact(self, fn: FunctionProtocol, exp_sql: str):
         query = self.qb.select(fn)
         self.assertEqual(query.get_sql(), exp_sql)
