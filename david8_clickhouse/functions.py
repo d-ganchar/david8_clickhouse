@@ -96,6 +96,8 @@ to_datetime_or_null = _StrArgFactory(name='toDateTimeOrNull')
 uniq_state = _OneArgWindowFactory(name='uniqState')
 var_pop = _OneArgWindowFactory(name='varPop')
 var_samp = _OneArgWindowFactory(name='varSamp')
+stddev_pop = _OneArgWindowFactory(name='stddevPop')
+stddev_samp = _OneArgWindowFactory(name='stddevSamp')
 
 multi_if = _MultiIfFactory()
 
