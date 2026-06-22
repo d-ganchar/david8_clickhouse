@@ -79,11 +79,11 @@ toml = [
 
 [[package]]
 name = "david8"
-version = "1.2.0b1"
+version = "1.6.0b1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/0a/3be91c88c6bf2bf51d39e2c0589a4cd8a6fa1437a818197f209ee20b0833/david8-1.2.0b1.tar.gz", hash = "sha256:3ed341412092c09a32095405d3533d8d9505f291c82228756372785c8ee06553", size = 24962, upload-time = "2026-06-16T09:36:13.694Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c5/0d/6c78a80a721de7df82732c6d69d1429431b448c68d9ea670f70c536b6b8a/david8-1.6.0b1.tar.gz", hash = "sha256:b6f15bc2ec3b9c3463be1f4f57ae31c63373c33c0509ee0b9e779acb80b1e82d", size = 30214, upload-time = "2026-06-22T16:35:33.605Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/87/67e179ffb638f1dc4ed2ca3e28a7c7e17e648a9cd5a67cf2829b3c6679da/david8-1.2.0b1-py3-none-any.whl", hash = "sha256:28b3779c26a844e256adc2d0673fd86275a8d4a54c244c63ce5b54a8e6fd6cdc", size = 23509, upload-time = "2026-06-16T09:36:12.648Z" },
+    { url = "https://files.pythonhosted.org/packages/39/2a/8264b53359191c0a366b6bc470211352f8fc96b87bc1bb4a1bdfd8c838e0/david8-1.6.0b1-py3-none-any.whl", hash = "sha256:32fae68d5d2e4b9c584f13d34f1773d3a0de5edd53a366ff23e93d2a3ef70980", size = 27335, upload-time = "2026-06-22T16:35:32.669Z" },
 ]
 
 [[package]]
@@ -103,7 +103,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "david8", specifier = ">=1.2.0b1,<2.0.0b1" }]
+requires-dist = [{ name = "david8", specifier = ">=1.6.0b1,<2.0.0b1" }]
 
 [package.metadata.requires-dev]
 dev = [

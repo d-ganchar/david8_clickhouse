@@ -1,5 +1,8 @@
-# https://clickhouse.com/docs/sql-reference/table-functions
-
+"""
+Deprecated since 0.7.0b1. Will be removed in 0.1.0
+Use `functions` module instead, example:
+from david8.functions import url_
+"""
 from .core.table_functions import S3TableFunction as _S3TableFunction
 from .core.table_functions import UrlTableFunction as _UrlTableFunction
 from .protocols.sql import TableFunctionProtocol

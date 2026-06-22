@@ -1,3 +1,8 @@
+"""
+Deprecated since 0.7.0b1. Will be removed in 0.1.0
+Use `functions` module instead, example:
+from david8.functions import yyyymmdd_to_date
+"""
 from david8.core.fn_generator import ColStrIntArgFactory as _ColStrIntArgFactory
 from david8.core.fn_generator import StrArgFactory as _StrArgFactory
 
