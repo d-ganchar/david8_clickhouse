@@ -38,3 +38,20 @@ class TestSelect(BaseTest):
     ])
     def test_sample(self, query: SelectProtocol, exp_sql: str):
         self.assertEqual(query.get_sql(), exp_sql)
+
+    @parameterized.expand([
+        (
+            BaseTest.qb.select('*').from_table('tbl').limit_by(),
+            'SELECT * FROM tbl LIMIT BY ALL',
+        ),
+        (
+            BaseTest.qb.select('*').from_table('tbl').limit_by('col1', 'col2'),
+            'SELECT * FROM tbl LIMIT BY col1, col2',
+        ),
+        (
+            BaseTest.qb.select('*').from_table('tbl').limit_by('col1', limit=10, offset=50).limit(100),
+            'SELECT * FROM tbl LIMIT 10, 50 BY col1 LIMIT 100',
+        ),
+    ])
+    def test_limit_by(self, query: SelectProtocol, exp_sql: str):
+        self.assertEqual(query.get_sql(), exp_sql)
