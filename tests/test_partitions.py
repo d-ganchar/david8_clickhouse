@@ -141,6 +141,27 @@ class TestPartitions(BaseTest):
 
     @parameterized.expand([
         (
+            BaseTest.qb.move_partition_to_volume('events', '2020-11-21', 'fast_ssd'),
+            "ALTER TABLE events MOVE PARTITION '2020-11-21' TO VOLUME 'fast_ssd'",
+        ),
+        (
+            BaseTest.qb.move_partition_to_volume('events', '2020-11-21', 'fast_ssd', on_cluster='{cluster}'),
+            "ALTER TABLE events ON CLUSTER {cluster} MOVE PARTITION '2020-11-21' TO VOLUME 'fast_ssd'",
+        ),
+        (
+            BaseTest.qb.move_partition_to_volume('events', '2020-11-21', 'fast_ssd', 'prod'),
+            "ALTER TABLE prod.events MOVE PARTITION '2020-11-21' TO VOLUME 'fast_ssd'",
+        ),
+        (
+            BaseTest.qb.move_partition_to_volume('events', '2020-11-21', 'fast_ssd', 'prod', '{cluster}'),
+            "ALTER TABLE prod.events ON CLUSTER {cluster} MOVE PARTITION '2020-11-21' TO VOLUME 'fast_ssd'",
+        ),
+    ])
+    def move_partition_to_volume(self, query: SelectProtocol, exp_sql):
+        self.assertEqual(query.get_sql(), exp_sql)
+
+    @parameterized.expand([
+        (
             BaseTest.qb.freeze_partition('events', '2020-11-21'),
             "ALTER TABLE events FREEZE PARTITION '2020-11-21'",
         ),
