@@ -12,6 +12,9 @@ class SelectProtocol(_SelectProtocol):
     def sample(self, value: int | float, offset: int | float = None) -> 'SelectProtocol':
         pass
 
+    def limit_by(self, *args: str, limit: int = None, offset: int = None) -> 'SelectProtocol':
+        pass
+
 class CreateTableProtocol(QueryProtocol):
     def engine(self, value: str) -> 'CreateTableProtocol':
         pass
