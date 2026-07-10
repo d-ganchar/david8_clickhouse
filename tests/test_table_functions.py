@@ -43,6 +43,11 @@ class TestTableFunction(BaseTest):
             "SELECT * FROM url('http://data/path/date=*/country=*/code=*/*.parquet')",
         ),
         (
+            BaseTest.qb.insert().into_table_fn(url_('http://data/path/date=*/country=*/code=*/*.parquet'))
+            .from_select(BaseTest.qb.select('*').from_table('t')),
+            "INSERT INTO FUNCTION url('http://data/path/date=*/country=*/code=*/*.parquet') SELECT * FROM t",
+        ),
+        (
             BaseTest.qb
             .select('*')
             .from_expr(
@@ -71,6 +76,11 @@ class TestTableFunction(BaseTest):
         (
             BaseTest.qb.select('*').from_expr(s3('https://public-datasets.com/test.csv')),
             "SELECT * FROM s3('https://public-datasets.com/test.csv')",
+        ),
+        (
+            BaseTest.qb.insert().into_table_fn(s3('https://public-datasets.com/test.csv'))
+            .from_select(BaseTest.qb.select('*').from_table('t')),
+            "INSERT INTO FUNCTION s3('https://public-datasets.com/test.csv') SELECT * FROM t",
         ),
         (
             BaseTest.qb.select('*').from_expr(s3(
@@ -158,5 +168,5 @@ class TestTableFunction(BaseTest):
             "compression_method='gzip')",
         ),
     ])
-    def test_select_from_s3_fn(self, query: SelectProtocol, exp_sql: str):
+    def test_s3(self, query: SelectProtocol, exp_sql: str):
         self.assertEqual(query.get_sql(), exp_sql)

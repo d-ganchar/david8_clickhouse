@@ -21,6 +21,9 @@ class ClickHouseQueryBuilder(QueryBuilderProtocol, _BaseQueryBuilder):
     def select(self, *args: str | AliasedProtocol | ExprProtocol | FunctionProtocol) -> SelectProtocol:
         return ClickHouseSelect(select_columns=args, dialect=self._dialect)
 
+    def with_expr(self, *args: AliasedProtocol) -> SelectProtocol:
+        return ClickHouseSelect(_with_expr=args, dialect=self._dialect)
+
     def drop_partitions(
         self,
         table: str,

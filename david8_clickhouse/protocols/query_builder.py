@@ -7,8 +7,9 @@ from ..protocols.sql import CreateTableProtocol, InsertProtocol, SelectProtocol
 
 
 class QueryBuilderProtocol(_QueryBuilderProtocol):
-    def select(self, *args: str | AliasedProtocol | ExprProtocol | FunctionProtocol) -> SelectProtocol:
-        pass
+    def select(self, *args: str | AliasedProtocol | ExprProtocol | FunctionProtocol) -> SelectProtocol: ...
+
+    def with_expr(self, *args: AliasedProtocol) -> SelectProtocol: ...
 
     def drop_partitions(
         self,
@@ -16,8 +17,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         partitions: Iterable[str | int | tuple[int | str, ...]],
         db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def attach_partition(
         self,
@@ -27,8 +27,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         from_tbl: str = None,
         from_db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def detach_partition(
         self,
@@ -36,8 +35,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         partition: str | int,
         db: str = None,
         on_cluster: str = None
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def freeze_partition(
         self,
@@ -46,8 +44,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         with_name: str = None,
         db: str = None,
         on_cluster: str = None
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def unfreeze_partition(
         self,
@@ -56,8 +53,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         with_name: str = None,
         db: str = None,
         on_cluster: str = None
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def replace_partition(
         self,
@@ -67,8 +63,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         from_tbl: str = None,
         from_db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def fetch_partition(
         self,
@@ -77,8 +72,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         from_: str,
         db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def move_partition_to_table(
         self,
@@ -88,8 +82,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         db: str = None,
         to_db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def move_partition_to_disk(
         self,
@@ -98,8 +91,7 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         disk: str,
         db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
     def move_partition_to_volume(
         self,
@@ -108,11 +100,8 @@ class QueryBuilderProtocol(_QueryBuilderProtocol):
         volume: str,
         db: str = None,
         on_cluster: str = None,
-    ) -> QueryProtocol:
-        pass
+    ) -> QueryProtocol: ...
 
-    def create_table_as(self, query: SelectProtocol, table: str, db: str = '') -> CreateTableProtocol:
-        pass
+    def create_table_as(self, query: SelectProtocol, table: str, db: str = '') -> CreateTableProtocol: ...
 
-    def insert(self) -> InsertProtocol:
-        pass
+    def insert(self) -> InsertProtocol: ...
