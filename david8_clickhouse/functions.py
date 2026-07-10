@@ -2,10 +2,16 @@ from david8.core.fn_generator import ColStrIntArgFactory as _ColStrIntArgFactory
 from david8.core.fn_generator import OneArgWindowFactory as _OneArgWindowFactory
 from david8.core.fn_generator import SeparatedArgsFnFactory as _SeparatedArgsFnFactory
 from david8.core.fn_generator import StrArgFactory as _StrArgFactory
+from david8.protocols.sql import ExprProtocol, QueryProtocol
 
 from .core.fn_generator import AttrNamesDefaultFactory as _AttrNamesDefaultFactory
 from .core.fn_generator import AttrNamesFactory as _AttrNamesFactory
 from .core.fn_generator import MultiIfFactory as _MultiIfFactory
+from .core.table_functions import IcebergS3Fn as _IcebergS3Fn
+from .core.table_functions import PostgresFn as _PostgresFn
+from .core.table_functions import PrometheusQueryFn as _PrometheusQueryFn
+from .core.table_functions import PrometheusQueryRangeFn as _PrometheusQueryRangeFn
+from .core.table_functions import RedisFn as _RedisFn
 from .core.table_functions import S3TableFunction as _S3TableFunction
 from .core.table_functions import UrlTableFunction as _UrlTableFunction
 from .protocols.sql import TableFunctionProtocol
@@ -42,6 +48,95 @@ def s3(
         secret_access_key=secret_access_key,
         session_token=session_token,
         compression_method=compression_method,
+    )
+
+def prometheus_query(
+    time_series_table: str,
+    promql_query: str,
+    db_name: str = '',
+    evaluation_time: ExprProtocol | None = None
+) -> TableFunctionProtocol:
+    return _PrometheusQueryFn(
+        time_series_table=time_series_table,
+        promql_query=promql_query,
+        db_name=db_name,
+        evaluation_time=evaluation_time,
+    )
+
+def prometheus_query_range(
+    time_series_table: str,
+    promql_query: str,
+    start_time: ExprProtocol,
+    end_time: ExprProtocol,
+    step: ExprProtocol,
+    db_name: str = '',
+) -> TableFunctionProtocol:
+    return _PrometheusQueryRangeFn(
+        time_series_table=time_series_table,
+        promql_query=promql_query,
+        db_name=db_name,
+        start_time=start_time,
+        end_time=end_time,
+        step=step,
+    )
+
+def iceberg_s3(
+    s3_url: str = '',
+    creds: str = '',
+    filename: str = '',
+    no_sign: bool = False,
+    data_format: str = '',
+    access_key_id: str = '',
+    secret_access_key: str = '',
+    session_token: str = '',
+    compression_method: str = '',
+) -> _IcebergS3Fn:
+    return _IcebergS3Fn(
+        url_=s3_url,
+        creds=creds,
+        filename=filename,
+        no_sign=no_sign,
+        data_format=data_format,
+        access_key_id=access_key_id,
+        secret_access_key=secret_access_key,
+        session_token=session_token,
+        compression_method=compression_method,
+    )
+
+def postgresql(
+    creds: str = '',
+    table: str | QueryProtocol = '',
+    host: str = '',
+    db: str = '',
+    user: str = '',
+    password: str = '',
+) -> _PostgresFn:
+    return _PostgresFn(
+        creds=creds,
+        source=table,
+        host=host,
+        db=db,
+        user=user,
+        password=password,
+    )
+
+def redis_(
+    host: str,
+    key: str,
+    structure: list[tuple[str, str]] = None,
+    db_index: int = 0,
+    password: str = '',
+    pool_size: int = 0,
+    primary: str = '',
+) -> _RedisFn:
+    return _RedisFn(
+        host=host,
+        key=key,
+        structure=structure or [],
+        db_index=db_index,
+        password=password,
+        pool_size=pool_size,
+        primary=primary,
     )
 
 # string functions
