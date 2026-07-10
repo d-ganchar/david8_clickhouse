@@ -28,11 +28,12 @@ class BaseTableFunction(TableFunctionProtocol):
         return ()
 
     def get_sql(self, dialect: DialectProtocol) -> str:
-        return f'{self.name}({", ".join(
-            f"{a}"
+        args = ", ".join(
+            str(a)
             for a in self._get_fn_args(dialect)
             if a
-        )})'
+        )
+        return f"{self.name}({args})"
 
 
 @dataclasses.dataclass(slots=True)
