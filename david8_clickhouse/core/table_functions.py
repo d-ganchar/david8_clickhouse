@@ -1,8 +1,21 @@
 import dataclasses
 
+from david8.functions import now_
 from david8.protocols.dialect import DialectProtocol
+from david8.protocols.sql import ExprProtocol
 
-from ..protocols.sql import TableFunctionProtocol
+from ..protocols.sql import SelectProtocol, TableFunctionProtocol
+
+
+def wrap_value(value: str, key: str = '') -> str:
+    if key and value:
+        return f"{key}='{value}'"
+    return f"'{value}'" if value else ''
+
+
+def structure_to_str(items: list[tuple[str, str]], key: str = 'structure') -> str:
+    structure = ', '.join(' '.join(s) for s in items)
+    return wrap_value(structure, key)
 
 
 @dataclasses.dataclass(slots=True)
@@ -11,11 +24,16 @@ class BaseTableFunction(TableFunctionProtocol):
     def name(self) -> str:
         raise NotImplementedError()
 
-    def _get_fn_args(self) -> tuple:
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
         return ()
 
     def get_sql(self, dialect: DialectProtocol) -> str:
-        return f'{self.name}({", ".join(a for a in self._get_fn_args() if a)})'
+        args = ", ".join(
+            str(a)
+            for a in self._get_fn_args(dialect)
+            if a
+        )
+        return f"{self.name}({args})"
 
 
 @dataclasses.dataclass(slots=True)
@@ -29,10 +47,7 @@ class UrlTableFunction(BaseTableFunction):
     def name(self) -> str:
         return 'url'
 
-    def _get_fn_args(self) -> tuple:
-        structure = ', '.join(' '.join(s) for s in self.structure)
-        structure = f"'{structure}'" if structure else ''
-
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
         if self.headers:
             parts = (f"'{k}'='{v}'" for k, v in self.headers.items())
             headers = f"headers=({', '.join(parts)})"
@@ -40,10 +55,35 @@ class UrlTableFunction(BaseTableFunction):
             headers = ''
 
         return (
-            f"'{self.url_}'",
-            f"'{self.data_format}'" if self.data_format else "",
-            structure,
+            wrap_value(self.url_),
+            wrap_value(self.data_format),
+            structure_to_str(self.structure, ''),
             headers,
+        )
+
+
+@dataclasses.dataclass(slots=True)
+class RedisFn(BaseTableFunction):
+    host: str
+    key: str
+    structure: list[tuple[str, str]] = dataclasses.field(default_factory=list)
+    db_index: int = 0
+    password: str = ''
+    pool_size: int = 0
+    primary: str = ''
+
+    @property
+    def name(self) -> str:
+        return 'redis'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        return (
+            wrap_value(self.host),
+            wrap_value(self.key),
+            structure_to_str(self.structure, ''),
+            self.db_index,
+            wrap_value(self.password),
+            wrap_value(self.primary),
         )
 
 
@@ -63,29 +103,143 @@ class S3TableFunction(BaseTableFunction):
     def name(self) -> str:
         return 's3'
 
-    def _get_fn_args(self) -> tuple:
-        structure = ', '.join(' '.join(s) for s in self.structure)
-        structure = f"'{structure}'" if structure else ''
-
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
         if self.creds:
             return (
                 self.creds,
-                f"url='{self.url_}'",
-                f"access_key_id='{self.access_key_id}'" if self.access_key_id else '',
-                f"secret_access_key='{self.secret_access_key}'" if self.secret_access_key else '',
-                f"session_token='{self.session_token}'" if self.session_token else '',
-                f"format='{self.data_format}'" if self.data_format else '',
-                f"structure={structure}" if structure else '',
-                f"compression_method='{self.compression_method}'" if self.compression_method else '',
+                wrap_value(self.url_, 'url'),
+                wrap_value(self.access_key_id, 'access_key_id'),
+                wrap_value(self.secret_access_key, 'secret_access_key'),
+                wrap_value(self.session_token, 'session_token'),
+                wrap_value(self.data_format, 'format'),
+                structure_to_str(self.structure),
+                wrap_value(self.compression_method, 'compression_method'),
             )
 
         return (
-            f"'{self.url_}'",
+            wrap_value(self.url_),
             'NOSIGN' if self.no_sign else '',
-            f"'{self.access_key_id}'" if self.access_key_id else "",
-            f"'{self.secret_access_key}'" if self.secret_access_key else "",
-            f"'{self.session_token}'" if self.session_token else "",
-            f"'{self.data_format}'" if self.data_format else "",
-            structure,
-            f"'{self.compression_method}'" if self.compression_method else "",
+            wrap_value(self.access_key_id),
+            wrap_value(self.secret_access_key),
+            wrap_value(self.session_token),
+            wrap_value(self.data_format),
+            structure_to_str(self.structure, ''),
+            wrap_value(self.compression_method),
         )
+
+@dataclasses.dataclass(slots=True)
+class PostgresFn(BaseTableFunction):
+    host: str = ''
+    db: str = ''
+    source: str | SelectProtocol = ''
+    user: str = ''
+    password: str = ''
+    creds: str = ''
+
+    @property
+    def name(self) -> str:
+        return 'postgresql'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.creds:
+            table = wrap_value(self.source) if isinstance(self.source, str) else f'({self.source.get_sql(dialect)})'
+            return self.creds, f"table={table}"
+
+        return (
+            wrap_value(self.host),
+            wrap_value(self.db),
+            wrap_value(self.source) if isinstance(self.source, str) else f'({self.source.get_sql(dialect)})',
+            wrap_value(self.user),
+            wrap_value(self.password),
+        )
+
+
+@dataclasses.dataclass(slots=True)
+class IcebergS3Fn(BaseTableFunction):
+    url_: str
+    data_format: str = ''
+    creds: str = ''
+    access_key_id: str = ''
+    secret_access_key: str = ''
+    session_token: str = ''
+    compression_method: str = ''
+    filename: str = ''
+    no_sign: bool = False
+
+    @property
+    def name(self) -> str:
+        return 'icebergS3'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.creds:
+            return (
+                self.creds,
+                wrap_value(self.access_key_id, 'access_key_id'),
+                wrap_value(self.secret_access_key, 'secret_access_key'),
+                wrap_value(self.session_token, 'session_token'),
+                wrap_value(self.data_format, 'format'),
+                wrap_value(self.filename, 'filename'),
+                wrap_value(self.compression_method, 'compression_method'),
+            )
+
+        return (
+            wrap_value(self.url_),
+            'NOSIGN' if self.no_sign else '',
+            wrap_value(self.access_key_id),
+            wrap_value(self.secret_access_key),
+            wrap_value(self.session_token),
+            wrap_value(self.data_format),
+            wrap_value(self.compression_method),
+        )
+
+
+@dataclasses.dataclass(slots=True)
+class PrometheusQueryFn(BaseTableFunction):
+    promql_query: str
+    time_series_table: str
+    db_name: str = ''
+    evaluation_time: ExprProtocol | None = None
+
+    @property
+    def name(self) -> str:
+        return 'prometheusQuery'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.db_name:
+            items = (wrap_value(self.db_name), wrap_value(self.time_series_table), )
+        else:
+            items = (wrap_value(self.time_series_table), )
+
+        evaluation_time = self.evaluation_time.get_sql(dialect) if self.evaluation_time else now_().get_sql(dialect)
+        items += (wrap_value(self.promql_query), evaluation_time)
+
+        return items
+
+
+@dataclasses.dataclass(slots=True)
+class PrometheusQueryRangeFn(BaseTableFunction):
+    promql_query: str
+    time_series_table: str
+    start_time: ExprProtocol
+    end_time: ExprProtocol
+    step: ExprProtocol
+    db_name: str = ''
+
+    @property
+    def name(self) -> str:
+        return 'prometheusQueryRange'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.db_name:
+            items = (wrap_value(self.db_name), wrap_value(self.time_series_table), )
+        else:
+            items = (wrap_value(self.time_series_table), )
+
+        items += (
+            wrap_value(self.promql_query),
+            self.start_time.get_sql(dialect),
+            self.end_time.get_sql(dialect),
+            self.step.get_sql(dialect),
+        )
+
+        return items

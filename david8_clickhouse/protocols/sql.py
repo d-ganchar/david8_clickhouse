@@ -9,31 +9,23 @@ class SelectProtocol(_SelectProtocol):
         final flag: https://clickhouse.com/docs/sql-reference/statements/select/from#final-modifier
         """
 
-    def sample(self, value: int | float, offset: int | float = None) -> 'SelectProtocol':
-        pass
+    def sample(self, value: int | float, offset: int | float = None) -> 'SelectProtocol': ...
 
-    def limit_by(self, *args: str, limit: int = None, offset: int = None) -> 'SelectProtocol':
-        pass
+    def limit_by(self, *args: str, limit: int = None, offset: int = None) -> 'SelectProtocol': ...
 
 class CreateTableProtocol(QueryProtocol):
-    def engine(self, value: str) -> 'CreateTableProtocol':
-        pass
+    def engine(self, value: str) -> 'CreateTableProtocol': ...
 
-    def partition_by(self, *args: str | FunctionProtocol) -> 'CreateTableProtocol':
-        pass
+    def partition_by(self, *args: str | FunctionProtocol) -> 'CreateTableProtocol': ...
 
-    def order_by(self, *args: str | FunctionProtocol) -> 'CreateTableProtocol':
-        pass
+    def order_by(self, *args: str | FunctionProtocol) -> 'CreateTableProtocol': ...
 
-    def if_not_exists(self) -> 'CreateTableProtocol':
-        pass
+    def if_not_exists(self) -> 'CreateTableProtocol': ...
 
-    def on_cluster(self, name: str) -> 'CreateTableProtocol':
-        pass
+    def on_cluster(self, name: str) -> 'CreateTableProtocol': ...
 
 
-class TableFunctionProtocol(ExprProtocol):
-    pass
+class TableFunctionProtocol(ExprProtocol): ...
 
 
 class InsertProtocol(_InsertProtocol):

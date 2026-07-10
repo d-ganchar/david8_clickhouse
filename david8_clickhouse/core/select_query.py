@@ -3,7 +3,7 @@ import dataclasses
 from david8.core.arg_convertors import to_col_or_expr
 from david8.core.base_dql import BaseSelect as _BaseSelect
 from david8.protocols.dialect import DialectProtocol
-from david8.protocols.sql import FunctionProtocol
+from david8.protocols.sql import AliasedProtocol, FunctionProtocol
 
 from ..protocols.sql import SelectProtocol, TableFunctionProtocol
 
@@ -14,6 +14,7 @@ class ClickHouseSelect(_BaseSelect, SelectProtocol):
     _sample: int | float | None = None
     _sample_offset: int | float | None = None
     _limit_by: tuple[tuple[str, ...], int | None, int | None] = dataclasses.field(default_factory=tuple)
+    _with_expr: tuple[AliasedProtocol, ...] = dataclasses.field(default_factory=tuple)
 
     def from_table(self, table_name: str, alias: str = '', db_name: str = '', final: bool = False) -> SelectProtocol:
         super().from_table(table_name, alias, db_name)
@@ -67,9 +68,12 @@ class ClickHouseSelect(_BaseSelect, SelectProtocol):
 
         return f' LIMIT{limit_str} BY {fields}'
 
-
     def _get_sql(self, dialect: DialectProtocol):
-        with_query = self._with_queries_to_sql(dialect)
+        if self._with_expr:
+            with_query = f"WITH {', '.join(e.get_sql(dialect) for e in self._with_expr)} "
+        else:
+            with_query = self._with_queries_to_sql(dialect)
+
         select = self._columns_to_sql(dialect)
         from_ref = self._from_to_sql(dialect)
         joins = self._joins_to_sql(dialect)
