@@ -13,6 +13,8 @@ from .core.table_functions import PostgresFn as _PostgresFn
 from .core.table_functions import PrometheusQueryFn as _PrometheusQueryFn
 from .core.table_functions import PrometheusQueryRangeFn as _PrometheusQueryRangeFn
 from .core.table_functions import RedisFn as _RedisFn
+from .core.table_functions import RemoteFn as _RemoteFn
+from .core.table_functions import RemoteSecureFn as _RemoteSecureFn
 from .core.table_functions import S3TableFunction as _S3TableFunction
 from .core.table_functions import UrlTableFunction as _UrlTableFunction
 from .protocols.sql import TableFunctionProtocol
@@ -158,6 +160,46 @@ def mongodb(
         user=user,
         password=password,
         structure=structure or [],
+    )
+
+
+def remote(
+    creds: str = '',
+    table: str = '',
+    host: str = '',
+    db: str = '',
+    user: str = '',
+    password: str = '',
+    sharding_key: str = '',
+) -> _RemoteFn:
+    return _RemoteFn(
+        creds=creds,
+        table=table,
+        host=host,
+        db=db,
+        user=user,
+        password=password,
+        sharding_key=sharding_key,
+    )
+
+
+def remote_secure(
+    creds: str = '',
+    table: str = '',
+    host: str = '',
+    db: str = '',
+    user: str = '',
+    password: str = '',
+    sharding_key: str = '',
+) -> _RemoteSecureFn:
+    return _RemoteSecureFn(
+        creds=creds,
+        table=table,
+        host=host,
+        db=db,
+        user=user,
+        password=password,
+        sharding_key=sharding_key,
     )
 
 

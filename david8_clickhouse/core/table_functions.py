@@ -276,3 +276,43 @@ class MongoDbFn(BaseTableFunction):
             wrap_value(self.password),
             structure_to_str(self.structure, ''),
         )
+
+
+@dataclasses.dataclass(slots=True)
+class RemoteFn(BaseTableFunction):
+    creds: str = ''
+    table: str = ''
+    host: str = ''
+    db: str = ''
+    user: str = ''
+    password: str = ''
+    sharding_key: str = ''
+
+    @property
+    def name(self) -> str:
+        return 'remote'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.creds:
+            return (
+                self.creds,
+                wrap_value(self.db, 'db'),
+                wrap_value(self.table, 'table'),
+                wrap_value(self.sharding_key, 'sharding_key'),
+            )
+
+        return (
+            wrap_value(self.host),
+            wrap_value(self.db),
+            wrap_value(self.table),
+            wrap_value(self.user),
+            wrap_value(self.password),
+            wrap_value(self.sharding_key),
+        )
+
+
+@dataclasses.dataclass(slots=True)
+class RemoteSecureFn(RemoteFn):
+    @property
+    def name(self) -> str:
+        return 'remoteSecure'
