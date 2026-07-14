@@ -8,10 +8,13 @@ from .core.fn_generator import AttrNamesDefaultFactory as _AttrNamesDefaultFacto
 from .core.fn_generator import AttrNamesFactory as _AttrNamesFactory
 from .core.fn_generator import MultiIfFactory as _MultiIfFactory
 from .core.table_functions import IcebergS3Fn as _IcebergS3Fn
+from .core.table_functions import MongoDbFn as _MongoDbFn
 from .core.table_functions import PostgresFn as _PostgresFn
 from .core.table_functions import PrometheusQueryFn as _PrometheusQueryFn
 from .core.table_functions import PrometheusQueryRangeFn as _PrometheusQueryRangeFn
 from .core.table_functions import RedisFn as _RedisFn
+from .core.table_functions import RemoteFn as _RemoteFn
+from .core.table_functions import RemoteSecureFn as _RemoteSecureFn
 from .core.table_functions import S3TableFunction as _S3TableFunction
 from .core.table_functions import UrlTableFunction as _UrlTableFunction
 from .protocols.sql import TableFunctionProtocol
@@ -138,6 +141,67 @@ def redis_(
         pool_size=pool_size,
         primary=primary,
     )
+
+
+def mongodb(
+    collection: str,
+    creds: str = '',
+    host: str = '',
+    database: str = '',
+    user: str = '',
+    password: str = '',
+    structure: list[tuple[str, str]] = None,
+) -> _MongoDbFn:
+    return _MongoDbFn(
+        collection=collection,
+        creds=creds,
+        host=host,
+        database=database,
+        user=user,
+        password=password,
+        structure=structure or [],
+    )
+
+
+def remote(
+    creds: str = '',
+    table: str = '',
+    host: str = '',
+    db: str = '',
+    user: str = '',
+    password: str = '',
+    sharding_key: str = '',
+) -> _RemoteFn:
+    return _RemoteFn(
+        creds=creds,
+        table=table,
+        host=host,
+        db=db,
+        user=user,
+        password=password,
+        sharding_key=sharding_key,
+    )
+
+
+def remote_secure(
+    creds: str = '',
+    table: str = '',
+    host: str = '',
+    db: str = '',
+    user: str = '',
+    password: str = '',
+    sharding_key: str = '',
+) -> _RemoteSecureFn:
+    return _RemoteSecureFn(
+        creds=creds,
+        table=table,
+        host=host,
+        db=db,
+        user=user,
+        password=password,
+        sharding_key=sharding_key,
+    )
+
 
 # string functions
 concat_with_separator = _SeparatedArgsFnFactory(name='concatWithSeparator', separator=', ')
