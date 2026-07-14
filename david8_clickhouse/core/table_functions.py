@@ -243,3 +243,36 @@ class PrometheusQueryRangeFn(BaseTableFunction):
         )
 
         return items
+
+
+@dataclasses.dataclass(slots=True)
+class MongoDbFn(BaseTableFunction):
+    collection: str
+    creds: str = ''
+    host: str = ''
+    database: str = ''
+    user: str = ''
+    password: str = ''
+    structure: list[tuple[str, str]] = dataclasses.field(default_factory=list)
+
+    @property
+    def name(self) -> str:
+        return 'mongodb'
+
+    def _get_fn_args(self, dialect: DialectProtocol) -> tuple:
+        if self.creds:
+            return (
+                self.creds,
+                wrap_value(self.host, 'host'),
+                wrap_value(self.collection, 'collection'),
+                structure_to_str(self.structure),
+            )
+
+        return (
+            wrap_value(self.host),
+            wrap_value(self.database),
+            wrap_value(self.collection),
+            wrap_value(self.user),
+            wrap_value(self.password),
+            structure_to_str(self.structure, ''),
+        )

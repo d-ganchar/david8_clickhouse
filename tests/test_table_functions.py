@@ -5,7 +5,14 @@ from david8.protocols.sql import QueryProtocol
 from parameterized import parameterized
 
 from david8_clickhouse.cast_types import string, uint8
-from david8_clickhouse.functions import iceberg_s3, postgresql, prometheus_query, prometheus_query_range, redis_
+from david8_clickhouse.functions import (
+    iceberg_s3,
+    mongodb,
+    postgresql,
+    prometheus_query,
+    prometheus_query_range,
+    redis_,
+)
 from david8_clickhouse.functions_table import s3, url_
 from david8_clickhouse.input_output_formats import CSV, CSV_WITH_NAMES, PARQUET
 from david8_clickhouse.protocols.sql import SelectProtocol
@@ -358,4 +365,44 @@ class TestTableFunction(BaseTest):
         ),
     ])
     def test_prometheus_query_range(self, query: SelectProtocol, exp_sql: str):
+        self.assertEqual(query.get_sql(), exp_sql)
+
+    @parameterized.expand([
+        (
+            BaseTest.qb.select('*').from_expr(mongodb(
+                host='127.0.0.1:27017',
+                database='test',
+                collection='my_collection',
+                user='test_user',
+                password='mongo_pass',
+                structure=[
+                    ('name', string),
+                    ('value', uint8),
+                ]
+            )),
+            "SELECT * FROM mongodb('127.0.0.1:27017', 'test', 'my_collection', 'test_user', 'mongo_pass', "
+            "'name String, value UInt8')",
+        ),
+        (
+            BaseTest.qb.select('*').from_expr(mongodb(
+                'my_collection',
+                'mongo_creds',
+                structure=[
+                    ('name', string),
+                    ('value', uint8),
+                ]
+            )),
+            "SELECT * FROM mongodb(mongo_creds, collection='my_collection', structure='name String, value UInt8')",
+        ),
+        # insert
+        (
+            BaseTest.qb.insert().into_table_fn(mongodb(
+                'my_collection',
+                'mongo_creds',
+            ))
+            .from_select(BaseTest.qb.select('name', 'value').from_table('t')),
+            "INSERT INTO FUNCTION mongodb(mongo_creds, collection='my_collection') SELECT name, value FROM t",
+        ),
+    ])
+    def test_mongodb(self, query: SelectProtocol, exp_sql: str):
         self.assertEqual(query.get_sql(), exp_sql)
